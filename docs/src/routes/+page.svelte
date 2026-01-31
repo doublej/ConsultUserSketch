@@ -30,14 +30,14 @@
 
 	const steps = [
 		{
-			title: 'Build the project',
-			description: 'Clone the repo and build both the Swift CLI and TypeScript MCP server.',
-			code: 'git clone https://github.com/doublej/ConsultUserSketch.git\ncd ConsultUserSketch\nnpm run build'
+			title: 'Run the installer',
+			description: 'The installer checks prerequisites, clones the repo, and builds everything.',
+			code: 'curl -sSL https://raw.githubusercontent.com/doublej/ConsultUserSketch/main/install.sh | bash'
 		},
 		{
 			title: 'Configure as MCP server',
-			description: 'Add ConsultUserSketch to your Claude MCP configuration to enable layout design tools.',
-			code: '{\n  "mcpServers": {\n    "consult-user-sketch": {\n      "command": "node",\n      "args": ["mcp-server/dist/index.js"]\n    }\n  }\n}'
+			description: 'Add ConsultUserSketch to your Claude MCP configuration. The installer prints the exact path for your system.',
+			code: '{\n  "mcpServers": {\n    "consult-user-sketch": {\n      "command": "node",\n      "args": [\n        "~/.local/share/consult-user-sketch/mcp-server/dist/index.js"\n      ]\n    }\n  }\n}'
 		},
 		{
 			title: 'Propose a layout',
@@ -47,7 +47,7 @@
 	];
 
 	let copied = $state(false);
-	const installCommand = 'git clone https://github.com/doublej/ConsultUserSketch.git && cd ConsultUserSketch && npm run build';
+	const installCommand = 'curl -sSL https://raw.githubusercontent.com/doublej/ConsultUserSketch/main/install.sh | bash';
 
 	function copyInstall() {
 		navigator.clipboard.writeText(installCommand);
@@ -75,7 +75,7 @@
 	<section class="install">
 		<div class="container">
 			<div class="install-box">
-				<code>npm run build</code>
+				<code>curl -sSL .../install.sh | bash</code>
 				<button onclick={copyInstall}>{copied ? 'Copied!' : 'Copy'}</button>
 			</div>
 		</div>

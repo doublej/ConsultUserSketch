@@ -2,10 +2,14 @@
   "name": "consult-user-sketch",
   "version": "1.0.0",
   "private": true,
+  "devDependencies": {
+    "js-tiktoken": "^1.0.0"
+  },
   "scripts": {
-    "build": "cd sketch-cli && swift build -c release && cd ../mcp-server && bun install && npx tsc",
+    "build": "cd sketch-cli && swift build -c release && cd ../mcp-server && bun install && bun run tsc",
     "build:swift": "cd sketch-cli && swift build -c release",
-    "build:ts": "cd mcp-server && npx tsc",
-    "start": "node mcp-server/dist/index.js"
+    "build:ts": "cd mcp-server && bun run tsc",
+    "start": "node mcp-server/dist/index.js",
+    "lint:descriptions": "bun scripts/lint-descriptions.ts"
   }
 }
