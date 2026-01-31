@@ -27,7 +27,7 @@ const blockSchema = z.object({
 });
 
 server.registerTool("propose_layout", {
-  description: "Open interactive grid layout editor. LLM proposes blocks, user can drag/resize/add/remove. Returns structured layout data + ASCII + PNG + text description. 10 min timeout.",
+  description: "Open interactive grid layout editor. LLM proposes blocks, user can drag/resize/add/remove. Returns structured layout data + ASCII + SVG + text description. 10 min timeout.",
   inputSchema: z.object({
     width: z.number().int().min(3).max(20).default(12).describe("Grid columns (3-20)"),
     height: z.number().int().min(3).max(20).default(8).describe("Grid rows (3-20)"),

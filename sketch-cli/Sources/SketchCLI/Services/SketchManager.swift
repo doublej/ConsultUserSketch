@@ -58,7 +58,7 @@ class SketchManager {
         let finalLayout = editorState.layout
         let ascii = AsciiRenderer.render(finalLayout)
         let summary = DescriptionRenderer.render(finalLayout)
-        let image = PngRenderer.render(finalLayout)
+        let image = SvgRenderer.render(finalLayout)
         let changes = diffLayouts(original: coloredLayout, modified: finalLayout)
 
         return LayoutResponse(
