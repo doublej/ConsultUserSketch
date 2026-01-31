@@ -15,7 +15,7 @@ enum SketchCLI {
 
         guard args.count >= 2 else {
             fputs("Usage: SketchCLI <command> [json]\n", stderr)
-            fputs("Commands: templates, describe, propose\n", stderr)
+            fputs("Commands: templates, describe, propose, test\n", stderr)
             exit(1)
         }
 
@@ -35,12 +35,22 @@ enum SketchCLI {
             }
             handleDescribe(args[2], encoder: encoder)
 
+        case "render":
+            guard args.count >= 3 else {
+                fputs("Usage: SketchCLI render <json>\n", stderr)
+                exit(1)
+            }
+            handleRender(args[2], encoder: encoder)
+
         case "propose":
             guard args.count >= 3 else {
                 fputs("Usage: SketchCLI propose <json>\n", stderr)
                 exit(1)
             }
             handlePropose(args[2], encoder: encoder)
+
+        case "test":
+            handleTest(args, encoder: encoder)
 
         default:
             fputs("Unknown command: \(command)\n", stderr)
@@ -71,6 +81,37 @@ enum SketchCLI {
         outputJSON(response, encoder: encoder)
     }
 
+    private static func handleRender(_ jsonInput: String, encoder: JSONEncoder) {
+        guard let data = jsonInput.data(using: .utf8),
+              let request = try? JSONDecoder().decode(DescribeRequest.self, from: data) else {
+            fputs("Invalid render request JSON\n", stderr)
+            exit(1)
+        }
+
+        let layout = GridLayout(
+            columns: request.columns,
+            rows: request.rows,
+            blocks: request.blocks.map {
+                GridBlock(label: $0.label, x: $0.x, y: $0.y, w: $0.w, h: $0.h, color: $0.color)
+            }
+        )
+
+        let detail = request.detail ?? "full"
+        let summary = DescriptionRenderer.render(layout, detail: detail)
+        let ascii = AsciiRenderer.render(layout)
+        let image = SvgRenderer.render(layout)
+
+        let response = LayoutResponse(
+            status: "rendered",
+            layout: layout,
+            ascii: ascii,
+            image: image,
+            summary: summary,
+            changes: nil
+        )
+        outputJSON(response, encoder: encoder)
+    }
+
     private static func handlePropose(_ jsonInput: String, encoder: JSONEncoder) {
         guard let data = jsonInput.data(using: .utf8),
               let request = try? JSONDecoder().decode(ProposeLayoutRequest.self, from: data) else {
@@ -86,6 +127,32 @@ enum SketchCLI {
 
         let manager = SketchManager.shared
         let response = manager.propose(layout: layout, title: request.title, description: request.description)
+        outputJSON(response, encoder: encoder)
+    }
+
+    private static func handleTest(_ args: [String], encoder: JSONEncoder) {
+        let outputDir: String
+        if let idx = args.firstIndex(of: "--output"), idx + 1 < args.count {
+            outputDir = args[idx + 1]
+        } else {
+            outputDir = (FileManager.default.currentDirectoryPath as NSString)
+                .appendingPathComponent("test-report")
+        }
+
+        try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
+
+        let app = NSApplication.shared
+        app.setActivationPolicy(.accessory)
+
+        fputs("Running \(TestRunner.cases.count) test cases...\n", stderr)
+        let results = TestRunner.run(outputDir: outputDir)
+
+        let reportPath = HtmlReportGenerator.generate(results: results, outputDir: outputDir)
+
+        let captured = results.filter { $0.screenshotPath != nil }.count
+        fputs("Done: \(results.count) cases, \(captured) screenshots captured\n", stderr)
+
+        let response: [String: String] = ["report": reportPath, "outputDir": outputDir]
         outputJSON(response, encoder: encoder)
     }
 

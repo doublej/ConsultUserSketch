@@ -9,6 +9,12 @@ struct BlockInput: Codable {
     let color: String?
 }
 
+struct NestedLayout: Codable {
+    let columns: Int?
+    let rows: Int?
+    let blocks: [BlockInput]?
+}
+
 struct ProposeLayoutRequest: Codable {
     let width: Int?
     let height: Int?
@@ -16,10 +22,11 @@ struct ProposeLayoutRequest: Codable {
     let title: String?
     let description: String?
     let blocks: [BlockInput]?
+    let layout: NestedLayout?
 
     func resolvedLayout() -> GridLayout {
-        var cols = width ?? 12
-        var rows = height ?? 8
+        var cols = layout?.columns ?? width ?? 12
+        var rows = layout?.rows ?? height ?? 8
 
         if let templateName = template,
            let tmpl = DensityTemplate.builtIn.first(where: { $0.name == templateName }) {
@@ -30,7 +37,8 @@ struct ProposeLayoutRequest: Codable {
         cols = max(3, min(20, cols))
         rows = max(3, min(20, rows))
 
-        let gridBlocks = (blocks ?? []).map { input in
+        let inputBlocks = layout?.blocks ?? blocks ?? []
+        let gridBlocks = inputBlocks.map { input in
             GridBlock(
                 label: input.label,
                 x: input.x, y: input.y,
