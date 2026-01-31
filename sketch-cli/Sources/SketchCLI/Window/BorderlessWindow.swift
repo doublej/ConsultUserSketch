@@ -29,12 +29,12 @@ class BorderlessWindow: NSWindow {
 }
 
 class DraggableView: NSView {
-    override var mouseDownCanMoveWindow: Bool { true }
+    override var mouseDownCanMoveWindow: Bool { false }
 
     override func draw(_ dirtyRect: NSRect) {
         let rect = bounds.insetBy(dx: 8, dy: 8)
         let path = NSBezierPath(roundedRect: rect, xRadius: 12, yRadius: 12)
-        NSColor.windowBackgroundColor.setFill()
+        Theme.windowBackground.setFill()
         path.fill()
     }
 }

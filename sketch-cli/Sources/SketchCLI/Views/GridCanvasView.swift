@@ -41,6 +41,7 @@ struct GridCanvasView: View {
                     )
                 }
             }
+            .coordinateSpace(name: "canvas")
         }
     }
 
@@ -53,7 +54,7 @@ struct GridCanvasView: View {
 
     private func gridBackground(cellW: CGFloat, cellH: CGFloat, size: CGSize) -> some View {
         Canvas { context, canvasSize in
-            let lineColor = Color.gray.opacity(0.2)
+            let lineColor = Color.gray.opacity(0.15)
             for col in 0 ... layout.columns {
                 let x = CGFloat(col) * cellW
                 var path = Path()

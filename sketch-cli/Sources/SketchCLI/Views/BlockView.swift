@@ -42,21 +42,26 @@ struct BlockView: View {
                     dash: isNested ? [4, 3] : []
                 ))
 
-            if isEditing {
-                TextField("Label", text: $editText, onCommit: {
-                    onRename?(editText)
-                    isEditing = false
-                })
-                .textFieldStyle(.plain)
-                .font(.system(size: 12, weight: .semibold))
-                .multilineTextAlignment(.center)
-                .padding(6)
-            } else {
-                Text(block.label)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.5)
+            VStack {
+                HStack {
+                    if isEditing {
+                        TextField("Label", text: $editText, onCommit: {
+                            onRename?(editText)
+                            isEditing = false
+                        })
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 10))
+                        .padding(3)
+                    } else {
+                        Text(block.label)
+                            .font(.system(size: 10))
+                            .foregroundColor(Color(white: 0.85).opacity(0.7))
+                            .lineLimit(1)
+                            .padding(3)
+                    }
+                    Spacer()
+                }
+                Spacer()
             }
 
             if interactive {
@@ -115,7 +120,7 @@ struct BlockView: View {
     }
 
     private var resizeGesture: some Gesture {
-        DragGesture(minimumDistance: 2)
+        DragGesture(minimumDistance: 2, coordinateSpace: .named("canvas"))
             .onChanged { value in
                 isResizing = true
                 resizeDelta = value.translation
