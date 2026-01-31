@@ -4,3 +4,5 @@ DerivedData/
 *.xcodeproj
 node_modules/
 dist/
+.DS_Store
+test-report/
