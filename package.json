@@ -1,0 +1,11 @@
+{
+  "name": "consult-user-sketch",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd sketch-cli && swift build -c release && cd ../mcp-server && bun install && npx tsc",
+    "build:swift": "cd sketch-cli && swift build -c release",
+    "build:ts": "cd mcp-server && npx tsc",
+    "start": "node mcp-server/dist/index.js"
+  }
+}
