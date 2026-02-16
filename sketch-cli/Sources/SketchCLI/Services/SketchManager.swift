@@ -34,6 +34,14 @@ class SketchManager {
         window.hasShadow = true
         window.isMovableByWindowBackground = false
 
+        // Connect keyboard shortcuts
+        window.onUndoRequested = { [weak editorState] in
+            editorState?.undo()
+        }
+        window.onRedoRequested = { [weak editorState] in
+            editorState?.redo()
+        }
+
         let bgView = DraggableView(frame: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight))
         window.contentView = bgView
 

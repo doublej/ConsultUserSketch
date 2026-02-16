@@ -33,7 +33,8 @@ struct GridCanvasView: View {
                         interactive: interactive,
                         isNested: isNested,
                         onDelete: { deleteBlock(id: block.id) },
-                        onRename: { newLabel in renameBlock(id: block.id, label: newLabel) }
+                        onRename: { newLabel in renameBlock(id: block.id, label: newLabel) },
+                        onDuplicate: { duplicateBlock(id: block.id) }
                     )
                     .offset(
                         x: CGFloat(block.x) * cellW + (isNested ? 3 : 1),
@@ -104,5 +105,21 @@ struct GridCanvasView: View {
         if let idx = layout.blocks.firstIndex(where: { $0.id == id }) {
             layout.blocks[idx].label = label
         }
+    }
+
+    private func duplicateBlock(id: String) {
+        guard let original = layout.blocks.first(where: { $0.id == id }) else { return }
+
+        // Offset the duplicate slightly (1 cell right, 1 cell down)
+        let duplicate = GridBlock(
+            label: "\(original.label) Copy",
+            x: min(original.x + 1, layout.columns - original.w),
+            y: min(original.y + 1, layout.rows - original.h),
+            w: original.w,
+            h: original.h,
+            color: original.color
+        )
+
+        layout.blocks.append(duplicate)
     }
 }

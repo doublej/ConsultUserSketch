@@ -1,14 +1,48 @@
 import SwiftUI
 
 class SketchEditorState: ObservableObject {
-    @Published var layout: GridLayout
+    @Published var layout: GridLayout {
+        didSet {
+            pushUndo(oldValue)
+        }
+    }
     let initialLayout: GridLayout
     var status: String = "cancelled"
+
+    private var undoStack: [GridLayout] = []
+    private var redoStack: [GridLayout] = []
+    private var isUndoing = false
 
     init(layout: GridLayout) {
         self.layout = layout
         self.initialLayout = layout
     }
+
+    private func pushUndo(_ layout: GridLayout) {
+        guard !isUndoing else { return }
+        undoStack.append(layout)
+        redoStack.removeAll()
+        if undoStack.count > 50 { undoStack.removeFirst() }
+    }
+
+    func undo() {
+        guard !undoStack.isEmpty else { return }
+        isUndoing = true
+        redoStack.append(layout)
+        layout = undoStack.removeLast()
+        isUndoing = false
+    }
+
+    func redo() {
+        guard !redoStack.isEmpty else { return }
+        isUndoing = true
+        undoStack.append(layout)
+        layout = redoStack.removeLast()
+        isUndoing = false
+    }
+
+    var canUndo: Bool { !undoStack.isEmpty }
+    var canRedo: Bool { !redoStack.isEmpty }
 }
 
 struct SketchEditorView: View {
@@ -45,14 +79,42 @@ struct SketchEditorView: View {
             }
             .padding(.horizontal, 16)
 
-            // Bottom row: instructions left, buttons right
+            // Bottom row: instructions left, undo/redo + buttons right
             HStack(spacing: 12) {
-                Text("Drag to move · Resize from corner · Double-click to rename · Right-click to delete")
-                    .font(.system(size: 11))
-                    .foregroundColor(Color(Theme.textMuted))
-                    .lineLimit(2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Drag to move · Resize from corner · Double-click to rename")
+                        .font(.system(size: 11))
+                        .foregroundColor(Color(Theme.textMuted))
+                    Text("⌘Z Undo · ⌘⇧Z Redo · ⌘D Duplicate · ⌫ Delete")
+                        .font(.system(size: 10))
+                        .foregroundColor(Color(Theme.textMuted).opacity(0.7))
+                }
+                .lineLimit(1)
 
                 Spacer()
+
+                // Undo/Redo buttons
+                HStack(spacing: 8) {
+                    Button {
+                        state.undo()
+                    } label: {
+                        Image(systemName: "arrow.uturn.backward")
+                            .foregroundColor(state.canUndo ? Color(Theme.textSecondary) : Color(Theme.textMuted))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!state.canUndo)
+                    .help("Undo (⌘Z)")
+
+                    Button {
+                        state.redo()
+                    } label: {
+                        Image(systemName: "arrow.uturn.forward")
+                            .foregroundColor(state.canRedo ? Color(Theme.textSecondary) : Color(Theme.textMuted))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!state.canRedo)
+                    .help("Redo (⌘⇧Z)")
+                }
 
                 FocusableButton(title: "Cancel", isPrimary: false) {
                     state.status = "cancelled"

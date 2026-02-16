@@ -5,6 +5,9 @@ class BorderlessWindow: NSWindow {
     override var canBecomeMain: Bool { true }
     override var acceptsFirstResponder: Bool { true }
 
+    var onUndoRequested: (() -> Void)?
+    var onRedoRequested: (() -> Void)?
+
     override init(
         contentRect: NSRect,
         styleMask style: NSWindow.StyleMask,
@@ -16,8 +19,15 @@ class BorderlessWindow: NSWindow {
     }
 
     override func keyDown(with event: NSEvent) {
+        let cmdPressed = event.modifierFlags.contains(.command)
+        let shiftPressed = event.modifierFlags.contains(.shift)
+
         if event.keyCode == 53 { // ESC
             NSApp.stopModal(withCode: .cancel)
+        } else if cmdPressed && shiftPressed && event.charactersIgnoringModifiers == "z" {
+            onRedoRequested?()
+        } else if cmdPressed && event.charactersIgnoringModifiers == "z" {
+            onUndoRequested?()
         } else {
             super.keyDown(with: event)
         }
