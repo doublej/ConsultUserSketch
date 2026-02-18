@@ -58,7 +58,7 @@ enum SketchCLI {
         }
     }
 
-    private static func handleDescribe(_ jsonInput: String, encoder: JSONEncoder) {
+    private static func resolveDescribeLayout(_ jsonInput: String) -> (GridLayout, String) {
         guard let data = jsonInput.data(using: .utf8),
               let request = try? JSONDecoder().decode(DescribeRequest.self, from: data) else {
             fputs("Invalid describe request JSON\n", stderr)
@@ -68,12 +68,14 @@ enum SketchCLI {
         let layout = GridLayout(
             columns: request.columns,
             rows: request.rows,
-            blocks: request.blocks.map {
-                GridBlock(label: $0.label, x: $0.x, y: $0.y, w: $0.w, h: $0.h, color: $0.color)
-            }
+            blocks: request.resolvedBlocks()
         )
+        return (layout, request.detail ?? "full")
+    }
 
-        let detail = request.detail ?? "full"
+    private static func handleDescribe(_ jsonInput: String, encoder: JSONEncoder) {
+        let (layout, detail) = resolveDescribeLayout(jsonInput)
+
         let summary = DescriptionRenderer.render(layout, detail: detail)
         let ascii = AsciiRenderer.render(layout)
 
@@ -82,21 +84,8 @@ enum SketchCLI {
     }
 
     private static func handleRender(_ jsonInput: String, encoder: JSONEncoder) {
-        guard let data = jsonInput.data(using: .utf8),
-              let request = try? JSONDecoder().decode(DescribeRequest.self, from: data) else {
-            fputs("Invalid render request JSON\n", stderr)
-            exit(1)
-        }
+        let (layout, detail) = resolveDescribeLayout(jsonInput)
 
-        let layout = GridLayout(
-            columns: request.columns,
-            rows: request.rows,
-            blocks: request.blocks.map {
-                GridBlock(label: $0.label, x: $0.x, y: $0.y, w: $0.w, h: $0.h, color: $0.color)
-            }
-        )
-
-        let detail = request.detail ?? "full"
         let summary = DescriptionRenderer.render(layout, detail: detail)
         let ascii = AsciiRenderer.render(layout)
         let image = SvgRenderer.render(layout)

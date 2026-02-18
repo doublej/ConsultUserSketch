@@ -13,6 +13,27 @@ export interface GridLayout {
   blocks: BlockInput[];
 }
 
+export interface LayoutNodeConstraints {
+  width?: number | "hug" | "fill";
+  height?: number | "hug" | "fill";
+}
+
+export interface LayoutNodeLayout {
+  direction?: "row" | "column";
+  gap?: number;
+}
+
+export interface LayoutNode {
+  id: string;
+  role?: "header" | "sidebar" | "canvas" | "footer" | "toolbar" | "panel";
+  label?: string;
+  children?: LayoutNode[];
+  constraints?: LayoutNodeConstraints;
+  layout?: LayoutNodeLayout;
+  priority?: number;
+  color?: string;
+}
+
 export interface ProposeOptions {
   width?: number;
   height?: number;
@@ -20,6 +41,7 @@ export interface ProposeOptions {
   title?: string;
   description?: string;
   blocks?: BlockInput[];
+  structure?: LayoutNode;
 }
 
 export interface LayoutResult {
@@ -34,7 +56,8 @@ export interface LayoutResult {
 export interface DescribeOptions {
   columns: number;
   rows: number;
-  blocks: BlockInput[];
+  blocks?: BlockInput[];
+  structure?: LayoutNode;
   detail?: "brief" | "full";
 }
 

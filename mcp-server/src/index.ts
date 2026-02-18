@@ -67,8 +67,32 @@ const blockSchema = z.object({
   color: z.string().max(20).optional(),
 });
 
+const dimensionValue = z.union([
+  z.number().int().min(1),
+  z.enum(["hug", "fill"]),
+]);
+
+const layoutNodeSchema: z.ZodType = z.lazy(() =>
+  z.object({
+    id: z.string().min(1).max(50),
+    role: z.enum(["header", "sidebar", "canvas", "footer", "toolbar", "panel"]).optional(),
+    label: z.string().max(50).optional(),
+    children: z.array(layoutNodeSchema).optional(),
+    constraints: z.object({
+      width: dimensionValue.optional(),
+      height: dimensionValue.optional(),
+    }).optional(),
+    layout: z.object({
+      direction: z.enum(["row", "column"]).optional(),
+      gap: z.number().int().min(0).max(10).optional(),
+    }).optional(),
+    priority: z.number().int().min(0).optional(),
+    color: z.string().max(20).optional(),
+  })
+);
+
 server.registerTool("propose_layout", {
-  description: "Open interactive grid layout editor. LLM proposes blocks, user can drag/resize/add/remove. Returns structured layout data + ASCII + SVG + text description. 10 min timeout.",
+  description: "Open interactive grid layout editor. Accepts either explicit grid blocks or a semantic structure tree (direction/constraints-based). User can drag/resize/add/remove. Returns structured layout data + ASCII + SVG + text description. 10 min timeout.",
   inputSchema: z.object({
     width: z.number().int().min(3).max(20).default(12).describe("Grid columns (3-20)"),
     height: z.number().int().min(3).max(20).default(8).describe("Grid rows (3-20)"),
@@ -76,7 +100,8 @@ server.registerTool("propose_layout", {
       .describe("Preset template (overrides width/height)"),
     title: z.string().max(80).default("Layout Sketch").describe("Dialog title"),
     description: z.string().max(200).optional().describe("Description shown in dialog"),
-    blocks: z.array(blockSchema).default([]).describe("Initial blocks to place on grid"),
+    blocks: z.array(blockSchema).default([]).describe("Initial blocks with grid coordinates (alternative to structure)"),
+    structure: layoutNodeSchema.optional().describe("Semantic layout tree with direction/constraints (alternative to blocks)"),
   }),
 }, async (p) => {
   if (isHeadless()) {
@@ -97,6 +122,7 @@ server.registerTool("propose_layout", {
       title: p.title,
       description: p.description,
       blocks: p.blocks,
+      structure: p.structure,
     }, controller.signal);
     return { content: formatLayoutResult(r) };
   } finally {
@@ -114,18 +140,22 @@ server.registerTool("get_layout_templates", {
 });
 
 server.registerTool("describe_layout", {
-  description: "Convert a layout to human-readable text and ASCII art without opening UI. Useful for understanding layout structure.",
+  description: "Convert a layout to human-readable text and ASCII art without opening UI. Accepts either explicit grid blocks or a semantic structure tree.",
   inputSchema: z.object({
     columns: z.number().int().min(3).max(20).describe("Grid columns"),
     rows: z.number().int().min(3).max(20).describe("Grid rows"),
-    blocks: z.array(blockSchema).min(1).describe("Blocks in the layout"),
+    blocks: z.array(blockSchema).optional().describe("Blocks with grid coordinates (alternative to structure)"),
+    structure: layoutNodeSchema.optional().describe("Semantic layout tree (alternative to blocks)"),
     detail: z.enum(["brief", "full"]).default("full").describe("Level of detail"),
+  }).refine(d => d.blocks?.length || d.structure, {
+    message: "Provide either blocks or structure",
   }),
 }, async (p) => {
   const r = await provider.describe({
     columns: p.columns,
     rows: p.rows,
     blocks: p.blocks,
+    structure: p.structure,
     detail: p.detail as "brief" | "full",
   });
   return { content: [{ type: "text", text: JSON.stringify(r) }] };
