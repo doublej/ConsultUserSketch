@@ -11,5 +11,6 @@
     "build:ts": "cd mcp-server && bun run tsc",
     "start": "node mcp-server/dist/index.js",
     "lint:descriptions": "bun scripts/lint-descriptions.ts"
-  }
+  },
+  "description": "MCP server and Swift interactive layout editor for grid-based sketches"
 }

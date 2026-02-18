@@ -7,7 +7,7 @@ import type {
 } from "../types.js";
 
 export interface SketchProvider {
-  propose(opts: ProposeOptions): Promise<LayoutResult>;
+  propose(opts: ProposeOptions, signal?: AbortSignal): Promise<LayoutResult>;
   describe(opts: DescribeOptions): Promise<DescribeResult>;
   templates(): Promise<TemplatesResult>;
 }

@@ -119,6 +119,11 @@ enum SketchCLI {
             exit(1)
         }
 
+        // Set theme from request
+        if let themeStr = request.theme?.lowercased() {
+            Theme.current = themeStr == "light" ? .light : .dark
+        }
+
         let layout = request.resolvedLayout()
 
         let app = NSApplication.shared

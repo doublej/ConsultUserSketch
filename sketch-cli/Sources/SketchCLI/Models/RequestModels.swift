@@ -23,6 +23,7 @@ struct ProposeLayoutRequest: Codable {
     let description: String?
     let blocks: [BlockInput]?
     let layout: NestedLayout?
+    let theme: String?
 
     func resolvedLayout() -> GridLayout {
         var cols = layout?.columns ?? width ?? 12

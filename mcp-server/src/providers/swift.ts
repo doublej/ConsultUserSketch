@@ -18,6 +18,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 function findSketchCli(): string | null {
+  // Explicit override
+  const envPath = process.env.SKETCHCLI_PATH;
+  if (envPath) {
+    if (existsSync(envPath)) return envPath;
+    throw new Error(`SKETCHCLI_PATH set but not found: ${envPath}`);
+  }
+
   // Dev: mcp-server/dist/providers -> sketch-cli/.build/release/SketchCLI
   const releasePath = join(__dirname, "..", "..", "..", "sketch-cli", ".build", "release", "SketchCLI");
   if (existsSync(releasePath)) return releasePath;
@@ -46,23 +53,28 @@ function getCliPath(): string {
 let cliPath: string | null = null;
 
 export class SwiftSketchProvider implements SketchProvider {
-  private async runCli<T>(command: string, args?: object): Promise<T> {
+  private async runCli<T>(command: string, args?: object, signal?: AbortSignal): Promise<T> {
     if (!cliPath) cliPath = getCliPath();
 
     const cliArgs = args ? [command, JSON.stringify(args)] : [command];
 
     let stdout: string;
+    let stderr = "";
     try {
-      const result = await execFileAsync(cliPath, cliArgs);
+      const result = await execFileAsync(cliPath, cliArgs, signal ? { signal } : {});
       stdout = result.stdout;
+      stderr = result.stderr;
     } catch (err: unknown) {
-      const e = err as { code?: string | number; signal?: string; stderr?: string; message?: string };
+      const e = err as { code?: string | number; signal?: string; stderr?: string; message?: string; name?: string };
+      if (e.name === "AbortError" || e.code === "ABORT_ERR") {
+        throw new Error(`SketchCLI '${command}' was cancelled`);
+      }
       if (e.code === "ENOENT") {
         throw new Error(`SketchCLI not found at: ${cliPath}`);
       }
       if (typeof e.code === "number") {
-        const stderr = e.stderr?.trim();
-        throw new Error(`SketchCLI '${command}' exited with code ${e.code}${stderr ? `: ${stderr}` : ""}`);
+        const errOut = e.stderr?.trim();
+        throw new Error(`SketchCLI '${command}' exited with code ${e.code}${errOut ? `: ${errOut}` : ""}`);
       }
       if (e.signal) {
         throw new Error(`SketchCLI '${command}' killed by signal ${e.signal}`);
@@ -73,12 +85,13 @@ export class SwiftSketchProvider implements SketchProvider {
     try {
       return JSON.parse(stdout.trim()) as T;
     } catch {
-      throw new Error(`SketchCLI '${command}' returned invalid JSON: ${stdout.slice(0, 200)}`);
+      const hint = stderr.trim() ? `\nStderr: ${stderr.trim().slice(0, 200)}` : "";
+      throw new Error(`SketchCLI '${command}' returned invalid JSON: ${stdout.slice(0, 200)}${hint}`);
     }
   }
 
-  async propose(opts: ProposeOptions): Promise<LayoutResult> {
-    return this.runCli<LayoutResult>("propose", opts);
+  async propose(opts: ProposeOptions, signal?: AbortSignal): Promise<LayoutResult> {
+    return this.runCli<LayoutResult>("propose", opts, signal);
   }
 
   async describe(opts: DescribeOptions): Promise<DescribeResult> {

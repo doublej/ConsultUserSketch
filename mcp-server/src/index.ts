@@ -1,21 +1,62 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { writeFileSync, mkdirSync } from "fs";
+import { join } from "path";
+import { tmpdir } from "os";
 import { SwiftSketchProvider } from "./providers/swift.js";
+import type { LayoutResult, BlockInput } from "./types.js";
 
 const DIALOG_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Dialog timed out after ${ms / 1000}s`)), ms)
-    ),
-  ]);
+type ContentBlock = { type: "text"; text: string };
+
+function formatBlock(b: BlockInput): string {
+  return `  - "${b.label}" at (${b.x},${b.y}) size ${b.w}×${b.h}`;
+}
+
+function formatLayoutResult(r: LayoutResult): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+
+  // Build readable text summary
+  const lines: string[] = [`Status: ${r.status}`];
+
+  if (r.summary) lines.push("", r.summary);
+
+  if (r.changes?.length) {
+    lines.push("", "Changes:");
+    for (const c of r.changes) lines.push(`  - ${c}`);
+  }
+
+  if (r.layout?.blocks?.length) {
+    lines.push("", `Grid: ${r.layout.columns}×${r.layout.rows}`, "Blocks:");
+    for (const b of r.layout.blocks) lines.push(formatBlock(b));
+  }
+
+  if (r.ascii) lines.push("", "ASCII:", r.ascii);
+
+  blocks.push({ type: "text", text: lines.join("\n") });
+
+  // Save SVG to temp file, return path (avoid inline image processing)
+  if (r.image) {
+    const dir = join(tmpdir(), "consult-user-sketch");
+    mkdirSync(dir, { recursive: true });
+    const svgPath = join(dir, `layout-${Date.now()}.svg`);
+    writeFileSync(svgPath, r.image);
+    blocks.push({ type: "text", text: `\nImage: ${svgPath}` });
+  }
+
+  return blocks;
+}
+
+function isHeadless(): boolean {
+  const env = process.env;
+  return !!(env.SSH_CONNECTION || env.SSH_TTY || env.CI);
 }
 
 const server = new McpServer({ name: "consult-user-sketch", version: "1.0.0" });
 const provider = new SwiftSketchProvider();
+let proposeActive = false;
 
 const blockSchema = z.object({
   label: z.string().min(1).max(50),
@@ -38,15 +79,30 @@ server.registerTool("propose_layout", {
     blocks: z.array(blockSchema).default([]).describe("Initial blocks to place on grid"),
   }),
 }, async (p) => {
-  const r = await withTimeout(provider.propose({
-    width: p.width,
-    height: p.height,
-    template: p.template,
-    title: p.title,
-    description: p.description,
-    blocks: p.blocks,
-  }), DIALOG_TIMEOUT_MS);
-  return { content: [{ type: "text", text: JSON.stringify(r) }] };
+  if (isHeadless()) {
+    throw new Error("Interactive layout editor requires a desktop environment (unavailable over SSH/CI)");
+  }
+  if (proposeActive) {
+    throw new Error("An interactive layout session is already running. Complete or cancel it first.");
+  }
+
+  proposeActive = true;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), DIALOG_TIMEOUT_MS);
+  try {
+    const r = await provider.propose({
+      width: p.width,
+      height: p.height,
+      template: p.template,
+      title: p.title,
+      description: p.description,
+      blocks: p.blocks,
+    }, controller.signal);
+    return { content: formatLayoutResult(r) };
+  } finally {
+    clearTimeout(timeout);
+    proposeActive = false;
+  }
 });
 
 server.registerTool("get_layout_templates", {

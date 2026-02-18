@@ -57,9 +57,9 @@ struct BlockView: View {
                         })
                         .textFieldStyle(.plain)
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color.white)
+                        .foregroundColor(Color(Theme.textPrimary))
                         .padding(4)
-                        .background(Color.black.opacity(0.3))
+                        .background(Color(Theme.cardBackground))
                         .cornerRadius(4)
                         .onExitCommand {
                             // ESC to cancel rename
@@ -69,8 +69,17 @@ struct BlockView: View {
                     } else {
                         Text(block.label)
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Color(white: 0.9).opacity(0.95))
-                            .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
+                            .foregroundColor(
+                                Theme.current == .dark
+                                    ? Color(white: 0.9).opacity(0.95)
+                                    : Color(white: 0.1).opacity(0.95)
+                            )
+                            .shadow(
+                                color: Theme.current == .dark
+                                    ? .black.opacity(0.3)
+                                    : .white.opacity(0.5),
+                                radius: 1, x: 0, y: 1
+                            )
                             .lineLimit(1)
                             .padding(4)
                     }
