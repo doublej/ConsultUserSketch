@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mcpick-plus-index": {
+      "command": "mcpick-plus-index",
+      "args": []
+    },
+    "ui-consult-user-sketch": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/jurrejan/Documents/development/swift/consult-user-sketch/mcp-server/dist/index.js"
+      ]
+    }
+  }
+}
