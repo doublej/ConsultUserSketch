@@ -24,10 +24,11 @@ class SketchManager {
 
         let window = BorderlessWindow(
             contentRect: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight),
-            styleMask: [.borderless],
+            styleMask: [.borderless, .resizable],
             backing: .buffered,
             defer: false
         )
+        window.minSize = NSSize(width: 500, height: 400)
         window.isOpaque = false
         window.backgroundColor = .clear
         window.level = .floating
@@ -36,10 +37,17 @@ class SketchManager {
 
         // Connect keyboard shortcuts
         window.onUndoRequested = { [weak editorState] in
-            editorState?.undo()
+            MainActor.assumeIsolated { editorState?.undo() }
         }
         window.onRedoRequested = { [weak editorState] in
-            editorState?.redo()
+            MainActor.assumeIsolated { editorState?.redo() }
+        }
+        window.onAcceptRequested = { [weak editorState] in
+            MainActor.assumeIsolated {
+                guard let editorState else { return }
+                editorState.status = editorState.layout == editorState.initialLayout ? "accepted" : "modified"
+                NSApp.stopModal()
+            }
         }
 
         let bgView = DraggableView(frame: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight))

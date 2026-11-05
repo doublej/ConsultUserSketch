@@ -8,6 +8,8 @@ struct BlockView: View {
     let gridRows: Int
     var interactive: Bool = true
     var isNested: Bool = false
+    var hoverOverride: Bool? = nil
+    var displayNumber: String = ""
     var onDelete: (() -> Void)?
     var onRename: ((String) -> Void)?
     var onDuplicate: (() -> Void)?
@@ -20,7 +22,10 @@ struct BlockView: View {
     @State private var editText = ""
     @State private var dragCoordinates: String?
     @State private var resizePreview: String?
-    @State private var isSelected = false
+    @State private var isHovered = false
+
+    /// hoverOverride wins when cycling; falls back to natural SwiftUI hover
+    private var effectiveHover: Bool { hoverOverride ?? isHovered }
 
     private var blockColor: Color {
         ColorPalette.swiftUIColor(from: block.color ?? "#3B82F6")
@@ -42,50 +47,55 @@ struct BlockView: View {
                 .fill(blockColor.opacity(isDragging ? 0.5 : (isNested ? 0.35 : 0.25)))
             RoundedRectangle(cornerRadius: 6)
                 .strokeBorder(blockColor, style: StrokeStyle(
-                    lineWidth: (isDragging || isSelected) ? 3 : 2,
+                    lineWidth: (isDragging || effectiveHover) ? 2 : 1,
                     dash: isNested ? [4, 3] : []
                 ))
 
-            VStack {
+            // Number badge at top-left
+            VStack(spacing: 0) {
                 HStack {
                     if isEditing {
-                        TextField("Label", text: $editText, onCommit: {
-                            if !editText.isEmpty {
-                                onRename?(editText)
+                        TextField("Label", text: $editText)
+                            .onSubmit {
+                                if !editText.isEmpty {
+                                    onRename?(editText)
+                                }
+                                isEditing = false
                             }
-                            isEditing = false
-                        })
-                        .textFieldStyle(.plain)
+                            .textFieldStyle(.plain)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(Color(Theme.textPrimary))
                         .padding(4)
                         .background(Color(Theme.cardBackground))
                         .cornerRadius(4)
                         .onExitCommand {
-                            // ESC to cancel rename
                             isEditing = false
                             editText = block.label
                         }
                     } else {
-                        Text(block.label)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(
-                                Theme.current == .dark
-                                    ? Color(white: 0.9).opacity(0.95)
-                                    : Color(white: 0.1).opacity(0.95)
-                            )
-                            .shadow(
-                                color: Theme.current == .dark
-                                    ? .black.opacity(0.3)
-                                    : .white.opacity(0.5),
-                                radius: 1, x: 0, y: 1
-                            )
-                            .lineLimit(1)
-                            .padding(4)
+                        Text(displayNumber)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(blockColor.opacity(0.85))
+                            .cornerRadius(4)
+                            .padding(3)
                     }
                     Spacer()
                 }
                 Spacer()
+            }
+
+            if effectiveHover && !isEditing && !isDragging {
+                Text(block.label)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white)
+                    .fixedSize()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.black.opacity(0.75))
+                    .cornerRadius(6)
             }
 
             if interactive {
@@ -141,6 +151,7 @@ struct BlockView: View {
             editText = block.label
             isEditing = true
         }
+        .onHover { hovering in isHovered = hovering }
         .gesture(interactive ? dragGesture : nil)
         .contextMenu {
             if interactive {
@@ -159,6 +170,7 @@ struct BlockView: View {
                 }
             }
         }
+        .zIndex(effectiveHover ? 1 : 0)
     }
 
     private var resizeHandle: some View {

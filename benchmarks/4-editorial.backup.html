@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Art of Slow Living — The Monthly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --accent: #c9a227;
+    --accent-light: #e8d9a0;
+    --border: #e8e5e0;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Lora', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .nav {
+    padding: 24px 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  .nav-subscribe {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 10px 20px;
+    background: var(--text);
+    color: var(--surface);
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .nav-subscribe:hover {
+    background: var(--accent);
+  }
+
+  header {
+    padding: 64px 48px 48px;
+    background: var(--surface);
+    text-align: center;
+    position: relative;
+    animation: headerIn 0.8s ease-out;
+  }
+
+  @keyframes headerIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header::before {
+    content: '✦';
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--accent);
+    font-size: 0.75rem;
+    letter-spacing: 0.5em;
+  }
+
+  .category {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    max-width: 800px;
+    margin: 0 auto 24px;
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto 32px;
+  }
+
+  .meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .meta-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .author-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .author-name {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .meta-divider {
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 64px 32px;
+  }
+
+  .container > p:first-of-type::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem;
+    float: left;
+    line-height: 0.8;
+    padding-right: 16px;
+    padding-top: 6px;
+    color: var(--accent);
+  }
+
+  .container h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1.3;
+    margin: 48px 0 24px;
+    animation: fadeUp 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .container p {
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+    color: var(--text-muted);
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+
+  blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 40px 0;
+    margin: 48px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    animation: fadeUp 0.6s ease-out 0.4s both;
+  }
+
+  blockquote::before {
+    content: '“';
+    position: absolute;
+    top: 24px;
+    left: -20px;
+    font-size: 5rem;
+    color: var(--accent);
+    opacity: 0.25;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .container h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 40px 0 20px;
+    animation: fadeUp 0.6s ease-out 0.5s both;
+  }
+
+  .pull-quote {
+    background: var(--surface);
+    padding: 40px;
+    margin: 48px 0;
+    border-left: 3px solid var(--accent);
+    animation: fadeUp 0.6s ease-out 0.5s both;
+  }
+
+  .pull-quote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 0;
+  }
+
+  .pull-quote cite {
+    display: block;
+    margin-top: 16px;
+    font-size: 0.8rem;
+    font-style: normal;
+    color: var(--text-muted);
+  }
+
+  .article-image {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #e8e4dc 0%, #d9d5cc 100%);
+    margin: 48px 0;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+
+  .article-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(transparent, rgba(250, 249, 247, 0.8));
+  }
+
+  .image-caption {
+    position: absolute;
+    bottom: 16px;
+    left: 24px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+    z-index: 1;
+  }
+
+  .share {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  .share-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .share-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .share-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .author-box {
+    background: var(--surface);
+    padding: 32px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin: 48px 0;
+    animation: fadeUp 0.6s ease-out 0.6s both;
+  }
+
+  .author-box-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .author-box-content h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .author-box-content p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .author-box-content a {
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .more-articles {
+    background: var(--surface);
+    padding: 64px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .more-articles h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .more-item {
+    text-decoration: none;
+    color: var(--text);
+    transition: opacity 0.2s ease;
+  }
+
+  .more-item:hover {
+    opacity: 0.7;
+  }
+
+  .more-image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #e8e4dc 0%, #d9d5cc 100%);
+    margin-bottom: 16px;
+    border-radius: 4px;
+  }
+
+  .more-category {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .more-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .more-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  footer {
+    background: var(--text);
+    color: var(--surface);
+    padding: 48px;
+    text-align: center;
+  }
+
+  footer p {
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .nav {
+      padding: 20px 24px;
+    }
+
+    .nav-links {
+      display: none;
+    }
+
+    header {
+      padding: 48px 24px 32px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+    }
+
+    .meta {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meta-divider {
+      display: none;
+    }
+
+    .container {
+      padding: 40px 24px;
+    }
+
+    .author-box {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .more-articles {
+      padding: 48px 24px;
+    }
+
+    .more-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">The Monthly</a>
+  <div class="nav-links">
+    <a href="#">Culture</a>
+    <a href="#">Design</a>
+    <a href="#">Travel</a>
+    <a href="#">Food</a>
+    <a href="#">Archive</a>
+  </div>
+  <a href="#" class="nav-subscribe">Subscribe</a>
+</nav>
+
+<header>
+  <span class="category">Culture</span>
+  <h1>The Art of Slow Living: Finding Peace in a Fast-Paced World</h1>
+  <p class="subtitle">In an era of constant connectivity and endless productivity, more people are choosing to embrace a different approach to life—one that values presence over productivity.</p>
+  <div class="meta">
+    <div class="meta-author">
+      <div class="author-avatar">EW</div>
+      <span class="author-name">Eleanor Wright</span>
+    </div>
+    <div class="meta-divider"></div>
+    <span>February 14, 2025</span>
+    <div class="meta-divider"></div>
+    <span>8 min read</span>
+  </div>
+</header>
+
+<div class="container">
+  <p>In the quiet hours of early morning, before the world awakens, there exists a particular kind of peace. The coffee maker gurgles softly, the light through the window is soft and forgiving, and for a moment—at least for a moment—time seems to pause. This is the essence of slow living, a philosophy that has quietly taken root in the collective consciousness of our hyper-connected age.</p>
+
+  <p>The movement toward slowness is not about doing less or abandoning ambition. Rather, it's about being present in whatever we do, finding meaning in the mundane, and creating space for the things that truly matter. It's a gentle rebellion against the cult of productivity that has come to define modern existence.</p>
+
+  <div class="article-image">
+    <span class="image-caption">Morning light in a Copenhagen apartment, where the slow living movement has deep roots.</span>
+  </div>
+
+  <h2>The Philosophy of Presence</h2>
+
+  <p>At its core, slow living is about intentionality. It's about making conscious choices rather than being swept along by the current of modern life. When we eat, we eat. When we walk, we walk. When we connect with loved ones, we are truly present—not half-engaged while checking our phones beneath the table.</p>
+
+  <blockquote>
+    The greatest gift you can give someone is your time, because when you give your time, you are giving a portion of your life that you will never get back.
+  </blockquote>
+
+  <p>This philosophy extends far beyond personal habits. Slow living encompasses how we work, how we shop, how we travel, and how we build community. It's a holistic approach that recognizes the interconnectedness of our daily choices.</p>
+
+  <h3>Finding Your Own Rhythm</h3>
+
+  <p>Embracing slow living doesn't require moving to the countryside or quitting your job. It begins with small shifts in perspective and habit. Perhaps it's the morning ritual of brewing tea without rushing, or the evening walk without headphones, or the deliberate choice to read纸质书籍instead of scrolling through social media.</p>
+
+  <div class="pull-quote">
+    <p>Slow living is not a destination but a continuous practice, a daily commitment to being rather than doing.</p>
+    <cite>— Carl Honoré, author of In Praise of Slow</cite>
+  </div>
+
+  <p>The beauty of this approach lies in its flexibility. Each person crafts their own version of slow living, adapted to their circumstances, their values, and their capacities. There is no prescribed formula, no rigid rules—only the gentle guidance of presence and intention.</p>
+
+  <h2>The Ripple Effect</h2>
+
+  <p>When we slow down, we not only transform our own lives but also influence those around us. Our presence becomes more grounding, our connections more meaningful, our impact more lasting. In this way, the personal practice of slowness becomes a form of quiet activism, a gentle protest against a world that often values speed over substance.</p>
+
+  <p>As we navigate the complexities of modern life, perhaps the most radical thing we can do is simply stop. Breathe. Be present. In doing so, we may just discover that everything we've been searching for was already there—all we needed was the patience to notice.</p>
+
+  <div class="share">
+    <span class="share-label">Share this article</span>
+    <div class="share-buttons">
+      <a href="#" class="share-btn">𝕏</a>
+      <a href="#" class="share-btn">f</a>
+      <a href="#" class="share-btn">in</a>
+      <a href="#" class="share-btn">✉</a>
+    </div>
+  </div>
+
+  <div class="author-box">
+    <div class="author-box-avatar">EW</div>
+    <div class="author-box-content">
+      <h3>Eleanor Wright</h3>
+      <p>Eleanor is a writer and cultural commentator based in Edinburgh. She explores the intersection of modern life and timeless wisdom, with a particular focus on mindful living.</p>
+      <a href="#">More from Eleanor →</a>
+    </div>
+  </div>
+</div>
+
+<section class="more-articles">
+  <h2>Continue Reading</h2>
+  <div class="more-grid">
+    <a href="#" class="more-item">
+      <div class="more-image"></div>
+      <span class="more-category">Design</span>
+      <div class="more-title">The Renaissance of Handmade Objects</div>
+      <div class="more-meta">February 10, 2025 · 6 min</div>
+    </a>
+    <a href="#" class="more-item">
+      <div class="more-image"></div>
+      <span class="more-category">Travel</span>
+      <div class="more-title">A Week in the Mountains of Abruzzo</div>
+      <div class="more-meta">February 7, 2025 · 10 min</div>
+    </a>
+    <a href="#" class="more-item">
+      <div class="more-image"></div>
+      <span class="more-category">Culture</span>
+      <div class="more-title">Why We Need Quiet Libraries</div>
+      <div class="more-meta">February 3, 2025 · 5 min</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 The Monthly. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

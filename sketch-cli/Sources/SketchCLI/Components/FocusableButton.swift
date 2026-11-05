@@ -36,6 +36,7 @@ class FocusableButtonView: NSView {
     }
 
     override var acceptsFirstResponder: Bool { true }
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
@@ -73,6 +74,14 @@ class FocusableButtonView: NSView {
         needsDisplay = true
         if wasPressed && isHovered {
             onAction?()
+        }
+    }
+
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 36 || event.keyCode == 76 { // Return / numpad Enter
+            onAction?()
+        } else {
+            super.keyDown(with: event)
         }
     }
 

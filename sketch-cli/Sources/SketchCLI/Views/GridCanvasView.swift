@@ -1,48 +1,117 @@
+import AppKit
 import SwiftUI
+
+final class OptionCycleState: ObservableObject {
+    @Published var promotedBlockId: String?
+
+    private var overlappingIds: [String] = []
+    private var eventMonitor: Any?
+    private var optionWasDown = false
+
+    func update(point: CGPoint, blocks: [GridBlock], cellW: CGFloat, cellH: CGFloat) {
+        overlappingIds = blocks.filter { b in
+            CGRect(x: CGFloat(b.x) * cellW, y: CGFloat(b.y) * cellH,
+                   width: CGFloat(b.w) * cellW, height: CGFloat(b.h) * cellH).contains(point)
+        }.map(\.id)
+        if let promoted = promotedBlockId, !overlappingIds.contains(promoted) {
+            promotedBlockId = nil
+        }
+    }
+
+    func clearHover() {
+        overlappingIds = []
+        promotedBlockId = nil
+    }
+
+    func startMonitoring() {
+        guard eventMonitor == nil else { return }
+        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
+            self?.handleFlags(event)
+            return event
+        }
+    }
+
+    func stopMonitoring() {
+        guard let monitor = eventMonitor else { return }
+        NSEvent.removeMonitor(monitor)
+        eventMonitor = nil
+    }
+
+    private func handleFlags(_ event: NSEvent) {
+        let optionDown = event.modifierFlags.contains(.option)
+        defer { optionWasDown = optionDown }
+        guard optionDown && !optionWasDown, overlappingIds.count > 1 else { return }
+
+        let idx = promotedBlockId.flatMap { overlappingIds.firstIndex(of: $0) }
+        let next = (idx ?? -1) + 1
+        promotedBlockId = overlappingIds[next % overlappingIds.count]
+    }
+
+    deinit { stopMonitoring() }
+}
 
 struct GridCanvasView: View {
     @Binding var layout: GridLayout
     var interactive: Bool = true
+    var blockNumbers: [String: String] = [:]
     var onAddBlock: ((Int, Int) -> Void)?
 
-    private var nesting: [String: String] {
-        DescriptionRenderer.detectNesting(layout.blocks)
-    }
+    @StateObject private var cycleState = OptionCycleState()
+    var nestingMap: [String: String]? = nil
 
     var body: some View {
         GeometryReader { geo in
-            let cellW = geo.size.width / CGFloat(layout.columns)
-            let cellH = geo.size.height / CGFloat(layout.rows)
-            let nestingMap = nesting
+            let cellSize = min(
+                geo.size.width / CGFloat(layout.columns),
+                geo.size.height / CGFloat(layout.rows)
+            )
+            let gridW = cellSize * CGFloat(layout.columns)
+            let gridH = cellSize * CGFloat(layout.rows)
+            let offsetX = (geo.size.width - gridW) / 2
+            let offsetY = (geo.size.height - gridH) / 2
+            let resolvedNesting = nestingMap ?? DescriptionRenderer.detectNesting(layout.blocks)
 
             ZStack(alignment: .topLeading) {
-                // Grid background + click-to-add
-                gridBackground(cellW: cellW, cellH: cellH, size: geo.size)
+                gridBackground(cellW: cellSize, cellH: cellSize, size: CGSize(width: gridW, height: gridH))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                // Blocks positioned via offset from top-left
-                // Render parent blocks first, then nested blocks on top
-                ForEach(sortedBlocks(nestingMap)) { block in
+                ForEach(sortedBlocks(resolvedNesting)) { block in
                     let blockBinding = binding(for: block)
-                    let isNested = nestingMap[block.id] != nil
+                    let isNested = resolvedNesting[block.id] != nil
                     BlockView(
                         block: blockBinding,
-                        cellWidth: cellW,
-                        cellHeight: cellH,
+                        cellWidth: cellSize,
+                        cellHeight: cellSize,
                         gridColumns: layout.columns,
                         gridRows: layout.rows,
                         interactive: interactive,
                         isNested: isNested,
+                        hoverOverride: cycleState.promotedBlockId.map { $0 == block.id },
+                        displayNumber: blockNumbers[block.id] ?? "",
                         onDelete: { deleteBlock(id: block.id) },
                         onRename: { newLabel in renameBlock(id: block.id, label: newLabel) },
                         onDuplicate: { duplicateBlock(id: block.id) }
                     )
                     .offset(
-                        x: CGFloat(block.x) * cellW + (isNested ? 3 : 1),
-                        y: CGFloat(block.y) * cellH + (isNested ? 3 : 1)
+                        x: CGFloat(block.x) * cellSize + (isNested ? 3 : 1),
+                        y: CGFloat(block.y) * cellSize + (isNested ? 3 : 1)
                     )
                 }
             }
+            .frame(width: gridW, height: gridH)
+            .offset(x: offsetX, y: offsetY)
             .coordinateSpace(name: "canvas")
+            .onContinuousHover { phase in
+                guard interactive else { return }
+                switch phase {
+                case .active(let location):
+                    cycleState.update(point: location, blocks: layout.blocks, cellW: cellSize, cellH: cellSize)
+                case .ended:
+                    cycleState.clearHover()
+                }
+            }
+            .onAppear { if interactive { cycleState.startMonitoring() } }
+            .onDisappear { cycleState.stopMonitoring() }
         }
     }
 

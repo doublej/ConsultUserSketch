@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class SketchEditorState: ObservableObject {
     @Published var layout: GridLayout {
         didSet {
@@ -55,13 +56,16 @@ struct SketchEditorView: View {
     @State private var addBlockRow = 0
 
     var body: some View {
+        let nestingMap = DescriptionRenderer.detectNesting(state.layout.blocks)
+        let blockNumbers = assignNumbers(blocks: state.layout.blocks, nestingMap: nestingMap)
+
         VStack(spacing: 0) {
             titleBar
                 .padding(.horizontal, 16)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
 
-            // Sidebar (Add Element) + Canvas side by side
+            // Sidebar (Add Element) + Canvas + Legend
             HStack(spacing: 12) {
                 addElementSidebar
                     .frame(width: 120)
@@ -69,20 +73,21 @@ struct SketchEditorView: View {
                 GridCanvasView(
                     layout: $state.layout,
                     interactive: true,
+                    blockNumbers: blockNumbers,
                     onAddBlock: { col, row in
                         addBlockCol = col
                         addBlockRow = row
                         showAddSheet = true
-                    }
+                    },
+                    nestingMap: nestingMap
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .padding(.horizontal, 16)
 
             // Bottom row: instructions left, undo/redo + buttons right
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Drag to move · Resize from corner · Double-click to rename")
+                    Text("Drag to move · Resize from corner · Double-click to rename · ⌥ Cycle layers")
                         .font(.system(size: 11))
                         .foregroundColor(Color(Theme.textMuted))
                     Text("⌘Z Undo · ⌘⇧Z Redo · ⌘D Duplicate · ⌫ Delete")
@@ -216,5 +221,22 @@ struct SketchEditorView: View {
             }
         }
         return (0, 0)
+    }
+
+    private func assignNumbers(blocks: [GridBlock], nestingMap: [String: String]) -> [String: String] {
+        var result: [String: String] = [:]
+        func recurse(parentId: String?, prefix: String) {
+            let children = blocks
+                .filter { nestingMap[$0.id] == parentId }
+                .sorted { $0.y != $1.y ? $0.y < $1.y : $0.x < $1.x }
+
+            for (i, block) in children.enumerated() {
+                let number = "\(prefix)\(i + 1)"
+                result[block.id] = number
+                recurse(parentId: block.id, prefix: "\(number):")
+            }
+        }
+        recurse(parentId: nil, prefix: "")
+        return result
     }
 }

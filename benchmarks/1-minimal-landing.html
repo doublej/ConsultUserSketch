@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oak — Modern furniture for modern living</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --text: #1a1a1a;
+      --accent: #b85c38;
+      --surface: #ffffff;
+      --border: #d4d0c8;
+      --text-muted: #6b6b6b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    header {
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+      animation: slideDown 0.6s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    nav a {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    nav .btn {
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .hero {
+      padding: 100px 48px;
+      text-align: center;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-image {
+      margin-top: 60px;
+      width: 100%;
+      max-width: 1000px;
+      height: 400px;
+      background: linear-gradient(135deg, #e8e4dc 0%, #d9d5cc 100%);
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      padding: 60px 48px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      animation: fadeIn 0.8s ease-out 0.4s both;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.5rem;
+      color: var(--text);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .features {
+      padding: 80px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .features h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+    }
+
+    .feature-item {
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .feature-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-item p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .cta {
+      padding: 100px 48px;
+      text-align: center;
+      background: var(--text);
+      color: var(--surface);
+    }
+
+    .cta h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 32px;
+    }
+
+    button, .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      background: var(--text);
+      color: var(--surface);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--surface);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    footer {
+      padding: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      animation: slideUp 0.6s ease-out 0.4s both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 24px;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+
+    footer small {
+      color: var(--text-muted);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .social-links a {
+      margin-left: 0;
+    }
+
+    @media (max-width: 768px) {
+      header, .hero, .stats, .features, .cta, footer {
+        padding: 24px;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .stats {
+        gap: 40px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="#" class="logo">Oak</a>
+    <nav>
+      <a href="#">Collections</a>
+      <a href="#">About</a>
+      <a href="#">Journal</a>
+      <a href="#" class="btn">Shop Now</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Crafted for those who appreciate the extraordinary</h1>
+    <p>Hand-selected furniture pieces that transform your space into a sanctuary of timeless elegance.</p>
+    <a href="#" class="btn">Explore Collection</a>
+    <div class="hero-image"></div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-value">12k+</span>
+      <span class="stat-label">Happy Customers</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">150+</span>
+      <span class="stat-label">Artisan Partners</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">8</span>
+      <span class="stat-label">Years of Excellence</span>
+    </div>
+  </div>
+
+  <section class="features">
+    <h2>Why Choose Oak</h2>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon">✦</div>
+        <h3>Ethically Sourced</h3>
+        <p>Every piece comes from sustainable forests with full traceability.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">◈</div>
+        <h3>Master Craftspeople</h3>
+        <p>Each item is handcrafted by skilled artisans with decades of experience.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">◇</div>
+        <h3>Lifetime Warranty</h3>
+        <p>We stand behind every piece with our comprehensive guarantee.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to elevate your space?</h2>
+    <p>Join thousands of homeowners who have transformed their interiors.</p>
+    <a href="#" class="btn btn-secondary">Get Started</a>
+  </section>
+
+  <footer>
+    <small>© 2025 Oak Furniture Co.</small>
+    <div class="social-links">
+      <a href="#">Instagram</a>
+      <a href="#">Pinterest</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+</body>
+</html>

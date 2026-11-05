@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Velocity — Ship faster with confidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface-elevated: #242424;
+    --text: #f0f0f0;
+    --text-muted: #8a8a8a;
+    --accent: #ff6b35;
+    --accent-2: #f7c59f;
+    --success: #22c55e;
+    --border: rgba(255, 255, 255, 0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(255, 107, 53, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(247, 197, 159, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  section {
+    padding: 100px 48px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    position: sticky;
+    top: 0;
+    background: rgba(13, 13, 13, 0.9);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--text);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn:hover {
+    background: #ff8255;
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent);
+    background: transparent;
+  }
+
+  .hero {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    animation: heroIn 1s ease-out;
+  }
+
+  @keyframes heroIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.95); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    animation: fadeIn 0.8s ease-out 0.1s both;
+  }
+
+  .hero-badge span {
+    color: var(--success);
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 800;
+    line-height: 0.95;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeIn 0.8s ease-out 0.2s both;
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease-out 0.3s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    animation: fadeIn 0.8s ease-out 0.4s both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 60px;
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    animation: fadeIn 0.8s ease-out 0.5s both;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .hero-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature {
+    background: var(--surface);
+    padding: 32px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: featureIn 0.6s ease-out both;
+  }
+
+  .feature:nth-child(1) { animation-delay: 0.2s; }
+  .feature:nth-child(2) { animation-delay: 0.35s; }
+  .feature:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes featureIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(30px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  .feature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s ease;
+  }
+
+  .feature:hover::before {
+    transform: scaleY(1);
+  }
+
+  .feature:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    transform: translateY(-4px);
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .feature h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent-2);
+  }
+
+  .feature p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .testimonials {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .section-header p {
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .testimonial {
+    background: var(--surface-elevated);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .testimonial-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .testimonial-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .testimonial-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .testimonial-role {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .pricing {
+    text-align: center;
+  }
+
+  .pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .pricing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 340px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .pricing-card.featured {
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+
+  .pricing-card.featured::before {
+    content: 'Most Popular';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--text);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .pricing-card.featured:hover {
+    transform: scale(1.05) translateY(-4px);
+  }
+
+  .pricing-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .pricing-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .pricing-price span {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .pricing-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pricing-features {
+    text-align: left;
+    margin-bottom: 32px;
+  }
+
+  .pricing-features li {
+    list-style: none;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  .pricing .btn {
+    width: 100%;
+  }
+
+  .cta {
+    background: linear-gradient(135deg, var(--accent) 0%, #ff8255 100%);
+    text-align: center;
+    padding: 80px 48px;
+  }
+
+  .cta h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .cta p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 32px;
+    font-size: 1.1rem;
+  }
+
+  .cta .btn {
+    background: var(--text);
+    color: var(--accent);
+  }
+
+  footer {
+    padding: 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-left: 24px;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+  }
+
+  footer a:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 900px) {
+    section {
+      padding: 60px 24px;
+    }
+
+    .navbar {
+      padding: 20px 24px;
+    }
+
+    .nav-links {
+      display: none;
+    }
+
+    .features {
+      grid-template-columns: 1fr;
+    }
+
+    .testimonial-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pricing-grid {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pricing-card.featured {
+      transform: scale(1);
+    }
+
+    .hero-stats {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="#" class="logo">Velocity</a>
+  <div class="nav-links">
+    <a href="#">Features</a>
+    <a href="#">Pricing</a>
+    <a href="#">Docs</a>
+    <a href="#">Blog</a>
+    <a href="#" class="btn-outline">Sign In</a>
+    <a href="#" class="btn">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">
+    <span>●</span> v2.0 now available
+  </div>
+  <h1>Ship faster</h1>
+  <p>The all-in-one platform for modern engineering teams. Deploy, monitor, and scale your applications with confidence.</p>
+  <div class="hero-actions">
+    <a href="#" class="btn">Start Free Trial</a>
+    <a href="#" class="btn btn-outline">Watch Demo</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">50ms</div>
+      <div class="hero-stat-label">Avg Response</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">99.99%</div>
+      <div class="hero-stat-label">Uptime SLA</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">10k+</div>
+      <div class="hero-stat-label">Teams</div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature">
+    <div class="feature-icon">⚡</div>
+    <h3>Lightning Fast</h3>
+    <p>Deploy in seconds, not minutes. Our intelligent caching and edge network ensure your users always get the fastest experience.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🛡</div>
+    <h3>Enterprise Security</h3>
+    <p>SOC 2 Type II certified. End-to-end encryption, SSO, and role-based access control built-in from day one.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">📊</div>
+    <h3>Deep Insights</h3>
+    <p>Real-time metrics, custom dashboards, and AI-powered anomaly detection help you understand your system inside out.</p>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2>Trusted by leading teams</h2>
+      <p>See what engineering teams around the world are saying about Velocity.</p>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <p class="testimonial-text">"Velocity transformed how we ship code. What used to take hours now takes minutes. The monitoring is incredible."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SK</div>
+          <div>
+            <div class="testimonial-name">Sarah Kim</div>
+            <div class="testimonial-role">CTO at Stripe</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <p class="testimonial-text">"We've reduced our deployment time by 85%. The DX is unmatched - it just works, and works fast."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">MJ</div>
+          <div>
+            <div class="testimonial-name">Marcus Johnson</div>
+            <div class="testimonial-role">Lead Engineer at Notion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <div class="section-header">
+    <h2>Simple, transparent pricing</h2>
+    <p>Start free, scale as you grow. No hidden fees.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Starter</div>
+      <div class="pricing-price">$0<span>/mo</span></div>
+      <div class="pricing-desc">Perfect for side projects</div>
+      <ul class="pricing-features">
+        <li>5 team members</li>
+        <li>100 deployments/day</li>
+        <li>Basic analytics</li>
+        <li>Community support</li>
+      </ul>
+      <a href="#" class="btn btn-outline">Get Started</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">$29<span>/mo</span></div>
+      <div class="pricing-desc">For growing teams</div>
+      <ul class="pricing-features">
+        <li>Unlimited members</li>
+        <li>Unlimited deployments</li>
+        <li>Advanced analytics</li>
+        <li>Priority support</li>
+        <li>Custom domains</li>
+      </ul>
+      <a href="#" class="btn">Start Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Ready to ship?</h2>
+  <p>Join thousands of teams shipping faster with Velocity.</p>
+  <a href="#" class="btn">Get Started for Free</a>
+</section>
+
+<footer>
+  <p>© 2025 Velocity Platform Inc.</p>
+  <div>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Twitter</a>
+    <a href="#">GitHub</a>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create your account — Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf6f0;
+    --surface: #ffffff;
+    --text: #2d2a26;
+    --text-muted: #8a847c;
+    --accent: #e07a5f;
+    --accent-hover: #c9614a;
+    --accent-light: rgba(224, 122, 95, 0.1);
+    --border: #e8e2da;
+    --shadow: rgba(45, 42, 38, 0.08);
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    right: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(224, 122, 95, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    left: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(201, 162, 39, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .progress-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .progress-step {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+
+  .progress-step.active {
+    background: var(--accent);
+  }
+
+  .progress-step.completed {
+    background: var(--success);
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+    animation: slideDown 0.6s ease-out;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+    animation: slideDown 0.6s ease-out 0.05s both;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+    animation: slideDown 0.6s ease-out 0.1s both;
+  }
+
+  .subtitle a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .subtitle a:hover {
+    text-decoration: underline;
+  }
+
+  form {
+    background: var(--surface);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 
+      0 4px 24px var(--shadow),
+      0 1px 3px var(--shadow);
+    animation: formIn 0.7s ease-out 0.15s both;
+  }
+
+  @keyframes formIn {
+    from { opacity: 0; transform: scale(0.98) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .social-login {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .social-btn:hover {
+    background: var(--bg);
+    border-color: var(--text-muted);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .divider span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .field {
+    margin-bottom: 20px;
+    animation: fieldIn 0.5s ease-out both;
+  }
+
+  .field:nth-child(1) { animation-delay: 0.25s; }
+  .field:nth-child(2) { animation-delay: 0.35s; }
+  .field:nth-child(3) { animation-delay: 0.45s; }
+
+  @keyframes fieldIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .field-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .field-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .field-icon {
+    position: relative;
+  }
+
+  .field-icon::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background: var(--text-muted);
+    opacity: 0.4;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  input {
+    width: 100%;
+    padding: 16px 20px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  input:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-light);
+  }
+
+  input:hover:not(:focus) {
+    background: rgba(253, 246, 240, 0.8);
+  }
+
+  input.error {
+    border-color: var(--error);
+    background: var(--surface);
+  }
+
+  input.error:focus {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  }
+
+  input.success {
+    border-color: var(--success);
+  }
+
+  .error-message {
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 6px;
+    display: none;
+  }
+
+  .field.has-error .error-message {
+    display: block;
+  }
+
+  .password-strength {
+    margin-top: 8px;
+    display: none;
+  }
+
+  .password-strength.visible {
+    display: block;
+  }
+
+  .strength-bars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .strength-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s ease;
+  }
+
+  .strength-bar.weak { background: var(--error); }
+  .strength-bar.medium { background: #f59e0b; }
+  .strength-bar.strong { background: var(--success); }
+
+  .strength-text {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .checkbox-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 24px 0;
+    cursor: pointer;
+  }
+
+  .checkbox-field input {
+    display: none;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-top: 2px;
+  }
+
+  .checkbox-field input:checked + .checkbox-custom {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox-custom::after {
+    content: '✓';
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-field input:checked + .checkbox-custom::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .checkbox-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .checkbox-label a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .checkbox-label a:hover {
+    text-decoration: underline;
+  }
+
+  button {
+    width: 100%;
+    padding: 18px 32px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--surface);
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    animation: fieldIn 0.5s ease-out 0.55s both;
+  }
+
+  button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(224, 122, 95, 0.3);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  button:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    animation: fieldIn 0.5s ease-out 0.6s both;
+  }
+
+  .form-footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .form-footer a:hover {
+    text-decoration: underline;
+  }
+
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: formIn 0.5s ease-out;
+  }
+
+  .success-state.visible {
+    display: block;
+  }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 2.5rem;
+    color: white;
+    animation: successPop 0.5s ease-out;
+  }
+
+  @keyframes successPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .success-state h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.75rem;
+    margin-bottom: 12px;
+  }
+
+  .success-state p {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .decorative {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.3;
+  }
+
+  .decorative:nth-child(1) { top: 15%; left: 8%; animation: float 4s ease-in-out infinite; }
+  .decorative:nth-child(2) { top: 55%; right: 12%; animation: float 5s ease-in-out infinite 1s; }
+  .decorative:nth-child(3) { bottom: 25%; left: 18%; animation: float 6s ease-in-out infinite 0.5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (max-width: 480px) {
+    form {
+      padding: 32px 24px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .social-login {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+
+<span class="decorative"></span>
+<span class="decorative"></span>
+<span class="decorative"></span>
+
+<div class="wrapper">
+  <div class="progress-bar">
+    <div class="progress-step completed"></div>
+    <div class="progress-step active"></div>
+    <div class="progress-step"></div>
+  </div>
+
+  <div class="logo">Studio</div>
+  <h1>Create your account</h1>
+  <p class="subtitle">Already have an account? <a href="#">Sign in</a></p>
+
+  <div id="formContainer">
+    <div class="social-login">
+      <button type="button" class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.128 9.204c0-.988-.09-1.935-.257-2.857H9.075v5.407h4.544c-.195 1.055-.787 1.948-1.678 2.548v2.119h2.717c1.589-1.464 2.47-3.62 2.47-6.217z" fill="#4285F4"/>
+          <path d="M9.075 18c2.17 0 3.99-.718 5.318-1.938l-2.717-2.119c-.718.481-1.637.767-2.601.767-2.001 0-3.695-1.353-4.298-3.17H.92v2.195C2.678 15.895 5.66 18 9.075 18z" fill="#34A853"/>
+          <path d="M4.777 10.693c-.235-.688-.368-1.423-.368-2.193s.133-1.505.368-2.193V4.112H.92C.31 5.593 0 7.256 0 9.075s.31 3.482.92 4.963l3.857-2.195z" fill="#FBBC05"/>
+          <path d="M9.075 3.555c1.165 0 2.21.401 3.037 1.186l2.897-2.897C13.064.958 11.244 0 9.075 0 5.66 0 2.678 2.105.92 4.837L4.777 6.99c.603-1.817 2.297-3.17 4.298-3.17z" fill="#EA4335"/>
+        </svg>
+        Google
+      </button>
+      <button type="button" class="social-btn">
+        <svg width="18" height="18" viewBox="0 0 814 1000" fill="currentColor">
+          <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.8 0 663.8 0 541.8c0-192.3 124.3-293.9 246.8-293.9 64.1 0 117.6 42.8 158.1 42.8 38.1 0 97.4-45.2 170.3-45.2 33.2 0 145.2 2.6 224.6 123.3zm-234.5-172.4c31.5-35.8 54-85.6 54-135.4 0-7.1-.6-14.3-1.9-20.1-51.4 2-112.3 34.2-148.8 75.3-28.6 32-55.5 81.2-55.5 131.6 0 7.7 1.3 15.4 1.9 17.9 3.2.6 8.4 1.3 13.6 1.3 46.5 0 102.5-31 136.7-70.6z"/>
+        </svg>
+        Apple
+      </button>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span>or</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <form id="signupForm">
+      <div class="field">
+        <div class="field-label">
+          <label for="email">Email</label>
+        </div>
+        <input type="email" id="email" placeholder="you@company.com" required>
+        <div class="error-message">Please enter a valid email address</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <label for="password">Password</label>
+          <span class="field-hint">At least 8 characters</span>
+        </div>
+        <input type="password" id="password" placeholder="••••••••••" required minlength="8">
+        <div class="error-message">Password must be at least 8 characters</div>
+        <div class="password-strength" id="passwordStrength">
+          <div class="strength-bars">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+          </div>
+          <div class="strength-text" id="strengthText"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <label for="fullname">Full Name</label>
+        </div>
+        <input type="text" id="fullname" placeholder="Jane Doe" required>
+        <div class="error-message">Please enter your full name</div>
+      </div>
+
+      <label class="checkbox-field">
+        <input type="checkbox" id="terms" required>
+        <span class="checkbox-custom"></span>
+        <span class="checkbox-label">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </label>
+
+      <button type="submit" id="submitBtn">Create account</button>
+    </form>
+
+    <div class="form-footer">
+      By signing up, you agree to receive updates and newsletters.
+    </div>
+  </div>
+
+  <div class="success-state" id="successState">
+    <div class="success-icon">✓</div>
+    <h2>Welcome to Studio!</h2>
+    <p>We've sent a verification link to your email. Please check your inbox and click the link to activate your account.</p>
+    <button onclick="location.reload()">Resend email</button>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('signupForm');
+  const passwordInput = document.getElementById('password');
+  const passwordStrength = document.getElementById('passwordStrength');
+  const strengthBars = passwordStrength.querySelectorAll('.strength-bar');
+  const strengthText = document.getElementById('strengthText');
+  const formContainer = document.getElementById('formContainer');
+  const successState = document.getElementById('successState');
+  const submitBtn = document.getElementById('submitBtn');
+
+  passwordInput.addEventListener('input', function() {
+    const password = this.value;
+    
+    if (password.length > 0) {
+      passwordStrength.classList.add('visible');
+      
+      let strength = 0;
+      if (password.length >= 8) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/) || password.match(/[^a-zA-Z0-9]/)) strength++;
+      if (password.length >= 12) strength++;
+      
+      strengthBars.forEach((bar, index) => {
+        bar.className = 'strength-bar';
+        if (index < strength) {
+          if (strength <= 1) bar.classList.add('weak');
+          else if (strength <= 2) bar.classList.add('medium');
+          else bar.classList.add('strong');
+        }
+      });
+      
+      if (strength <= 1) strengthText.textContent = 'Weak password';
+      else if (strength <= 2) strengthText.textContent = 'Fair password';
+      else if (strength <= 3) strengthText.textContent = 'Good password';
+      else strengthText.textContent = 'Strong password';
+    } else {
+      passwordStrength.classList.remove('visible');
+    }
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let isValid = true;
+    const fields = form.querySelectorAll('input[required]');
+    
+    fields.forEach(field => {
+      const fieldParent = field.closest('.field');
+      if (!field.value.trim() || (field.type === 'checkbox' && !field.checked)) {
+        field.classList.add('error');
+        fieldParent.classList.add('has-error');
+        isValid = false;
+      } else {
+        field.classList.remove('error');
+        fieldParent.classList.remove('has-error');
+      }
+    });
+
+    if (isValid) {
+      submitBtn.textContent = 'Creating account...';
+      submitBtn.disabled = true;
+      
+      setTimeout(() => {
+        formContainer.style.display = 'none';
+        successState.classList.add('visible');
+      }, 1500);
+    }
+  });
+
+  form.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+      this.classList.remove('error');
+      if (this.closest('.field')) {
+        this.closest('.field').classList.remove('has-error');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
